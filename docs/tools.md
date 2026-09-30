@@ -718,7 +718,7 @@ X  wc LP = w0*SQRT(1-1/(2Q²)+SQRT(1+(1-1/(2Q²))²)) | W*√(1-1/(2*Q²)+√(1+
 U  wc HP = w0²/wc LP         | W²/X                                | rad/s
 L  wL BP = w0*SQRT(1+1/(4Q²))-w0/(2Q) | W*√(1+1/(4*Q²))-W/(2*Q)    | rad/s
 H  wH BP = w0*SQRT(1+1/(4Q²))+w0/(2Q) | W*√(1+1/(4*Q²))+W/(2*Q)    | rad/s
-B  BW = w0/Q                 | W/Q                                 | rad/s
+D  BW = w0/Q                 | W/Q                                 | rad/s
 ```
 answers: w0, Q, wc LP, wc HP, BW
 
@@ -868,7 +868,7 @@ steps:
 ```
 G  G3 = RF/R1                     | F/A                  | 
 W  w0 = SQRT(G3)/(R*C)            | √(G)/(R*C)           | rad/s
-F  f0 = w0/(2*PI)                 | W/(2*pi)             | Hz
+E  f0 = w0/(2*PI)                 | W/(2*pi)             | Hz
 U  G1 = (1+RF/R1)/(1+R2/R3)       | (1+F/A)/(1+B/D)      | 
 V  G2 = (1+RF/R1)/(1+R3/R2)       | (1+F/A)/(1+D/B)      | 
 Q  Q = SQRT(G3)/G2                | √(G)/V               | 
