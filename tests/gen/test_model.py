@@ -131,3 +131,14 @@ def test_at_most_nine_guards_per_tool(topic):
     tool = topic.tools[0]
     guards = tuple(Guard("V=0", ("ZERO",)) for _ in range(10))
     check(with_tool(topic, steps=(*tool.steps, *guards)), "at most 9 guards")
+
+
+def test_calc_and_poly_need_a_formula(topic):
+    from ti84.model import Poly
+
+    tool = topic.tools[0]
+    check(with_tool(topic, steps=(*tool.steps, Calc("X", "X", "", "V"))), "empty formula")
+    mix = topic.tools[1]
+    steps = tuple(replace(s, formula="") if isinstance(s, Poly) else s for s in mix.steps)
+    bad = replace(topic, tools=(topic.tools[0], replace(mix, steps=steps)))
+    check(bad, "empty formula")
