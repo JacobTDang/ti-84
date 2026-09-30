@@ -87,6 +87,8 @@ def test_lint_accepts_clean_code():
         ("2^-1→A", "'-' starts an expression"),
         ("Disp A", "token 'Disp ' is not in the dialect"),
         ('"PI SAYS \'HI\'"→Str1', "does not round-trip in a string"),
+        ("5→dim(L₁)", "'→' must be followed by a variable"),
+        ("5→2", "'→' must be followed by a variable"),
     ],
 )
 def test_lint_rejects(code, message):
