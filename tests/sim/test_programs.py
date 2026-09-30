@@ -284,3 +284,8 @@ def test_unused_events_fail():
 def test_end_without_block_fails():
     with pytest.raises(SimError, match="End"):
         calc_with(P="1→A\nEnd\n").run("P")
+
+
+def test_bad_label_names_program_and_line():
+    with pytest.raises(SimError, match=r"ERR:LABEL at P:2"):
+        calc_with(P="1→A\nLbl L₁\n")
