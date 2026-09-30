@@ -1,0 +1,12 @@
+{Ans,0}→⌊ZF
+round(⌊ZF(1),2)→⌊ZF(2)
+If ⌊ZF(2)=0
+Then
+"0"→Str9
+Return
+End
+toString(abs(⌊ZF(2)))→Str9
+If ⌊ZF(2)<0
+Then
+"-"+Str9→Str9
+End

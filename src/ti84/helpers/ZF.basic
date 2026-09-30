@@ -1,0 +1,71 @@
+{Ans,0,0,0}→⌊ZF
+abs(⌊ZF(1))→⌊ZF(2)
+If ⌊ZF(2)=0
+Then
+"0"→Str9
+Return
+End
+If ⌊ZF(2)<1ᴇ⁻12 or ⌊ZF(2)>999.95ᴇ9
+Then
+toString(⌊ZF(2))→Str9
+If ⌊ZF(1)<0
+Then
+"-"+Str9→Str9
+End
+Return
+End
+3*int(log(⌊ZF(2))/3)→⌊ZF(3)
+⌊ZF(2)*10^(⁻⌊ZF(3))→⌊ZF(4)
+round(⌊ZF(4),3-int(log(⌊ZF(4))))→⌊ZF(4)
+If ⌊ZF(4)≥1000
+Then
+⌊ZF(4)/1000→⌊ZF(4)
+⌊ZF(3)+3→⌊ZF(3)
+End
+If ⌊ZF(4)<1
+Then
+⌊ZF(4)*1000→⌊ZF(4)
+⌊ZF(3)-3→⌊ZF(3)
+End
+If ⌊ZF(3)<⁻12 or ⌊ZF(3)>9
+Then
+toString(⌊ZF(2))→Str9
+If ⌊ZF(1)<0
+Then
+"-"+Str9→Str9
+End
+Return
+End
+toString(⌊ZF(4))→Str9
+If ⌊ZF(3)=⁻12
+Then
+Str9+"p"→Str9
+End
+If ⌊ZF(3)=⁻9
+Then
+Str9+"n"→Str9
+End
+If ⌊ZF(3)=⁻6
+Then
+Str9+"μ"→Str9
+End
+If ⌊ZF(3)=⁻3
+Then
+Str9+"m"→Str9
+End
+If ⌊ZF(3)=3
+Then
+Str9+"k"→Str9
+End
+If ⌊ZF(3)=6
+Then
+Str9+"M"→Str9
+End
+If ⌊ZF(3)=9
+Then
+Str9+"G"→Str9
+End
+If ⌊ZF(1)<0
+Then
+"-"+Str9→Str9
+End

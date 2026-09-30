@@ -1,0 +1,27 @@
+If θ=0
+Then
+Return
+End
+{0}→⌊ZF
+int((length(Str0)+25)/26)→⌊ZF(1)
+If ⌊ZF(1)<1
+Then
+1→⌊ZF(1)
+End
+If θ+⌊ZF(1)-1>9
+Then
+Output(10,1,"ENTER:MORE  CLEAR:QUIT")
+0
+Repeat max(Ans={45,105})
+getKey
+End
+If Ans=45
+Then
+0→θ
+Return
+End
+ClrHome
+1→θ
+End
+Output(θ,1,Str0)
+θ+⌊ZF(1)→θ

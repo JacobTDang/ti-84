@@ -1,0 +1,14 @@
+{Ans}→⌊ZS
+If imag(⌊ZS(1))=0
+Then
+⌊ZS(1)
+prgmZF
+If ⌊ZS(1)<0
+Then
+"("+Str9+")"→Str9
+End
+Return
+End
+⌊ZS(1)
+prgmZC
+"("+Str9+")"→Str9
