@@ -1,0 +1,23 @@
+[project]
+name = "ti84-ee230"
+version = "0.1.0"
+description = "TI-84 Plus CE programs for EE 2300 that show their work"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["tivars>=1.1.1"]
+
+[project.scripts]
+ti84-build = "ti84.build:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["uv_build>=0.11,<0.12"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "ti84"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
