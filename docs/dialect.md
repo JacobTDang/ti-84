@@ -122,6 +122,7 @@ Outside strings, the lint rejects:
 - lowercase-letter tokens (`BBB0`–`BBCA`): the letters `i` and `e` used where `𝑖`, `𝑒` or `ᴇ` were meant;
 - a letter `E` right after a digit or `.`: the author typed `1.5E3`;
 - `-` (71) at the start of an expression, as defined above;
+- `→` followed by anything but a store target (a letter, `θ`, `Str0`–`Str9`, `L₁`–`L₆` or a named list), which catches forms like `→dim(` that are valid TI-BASIC but outside the dialect;
 - any token not in the table above.
 
 Inside strings, the lint rejects `"` and any character whose encode→decode round trip changes the text. The display glyphs known to work in strings are `² ° Ω μ Δ ∠ α β θ σ τ ≤ ≥ ⁻ ᴇ 𝑖 |` and ASCII letters, digits, spaces and `+-*/^=<>()[]{},.:;!?%&#@_$|`. The apostrophe, `~` and `\` do not round-trip, and `→` always ends a string. `π`, `ω` and `√` don't encode inside strings, so the display text writes `PI`, `w` and `SQRT(`.

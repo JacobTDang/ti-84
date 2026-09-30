@@ -77,6 +77,14 @@ _OPERATORS = {
 
 _PROGRAM_NAME = re.compile(r"[A-Z][A-Z0-9]{0,7}")
 
+# What may follow →: a letter, θ, Str0-Str9, L₁-L₆, or a named list.
+_STORE_TARGETS = (
+    {bytes([c]) for c in range(0x41, 0x5C)}
+    | {bytes([0xAA, k]) for k in range(10)}
+    | {bytes([0x5D, k]) for k in range(6)}
+    | {b"\xeb"}
+)
+
 
 def encode(text: str) -> bytes:
     data, _ = _encode_with_os(text)
@@ -125,6 +133,8 @@ def lint(text: str, program: str) -> None:
                     problems.append(f"{program}:{line}: {token.text!r} does not round-trip in a string")
                 continue
             in_string = False
+        if prev is not None and prev.bits == STORE and token.bits not in _STORE_TARGETS:
+            problems.append(f"{program}:{line}: '→' must be followed by a variable, not {token.text!r}")
         if token.bits == NEWLINE:
             line += 1
         elif token.bits == QUOTE:
