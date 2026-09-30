@@ -435,18 +435,23 @@ POLES LIKE {0,-2,-1+3i}
 ```
 inputs: `L₁ "N {..}=" list` · `L₂ "POLES {..}=" list`
 Guards: `dim(L₁)>dim(L₂)` → "IMPROPER: DEG N ≥ DEG D" / "DIVIDE FIRST"; any two poles equal → "REPEATED POLE:" / "NOT HANDLED HERE".
-Compute (Raw): for each pole i, `Ki = N(pi) / ∏(j≠i) (pi-pj)` into `L₃`.
-Answers (Raw): `K1=…` … one line per pole (`cplx`).
-Work (Raw), per pole i:
+Compute (Raw): for each pole i, `Ki = N(pi) / ∏(j≠i) (pi-pj)` into `L₃` (N evaluated by Horner's rule).
+Answers (Raw): one line per pole, `K<i>=<ZC(Ki)>`.
+Work (Raw), per pole i; `ZS`, `ZC`, `ZF` and `ZR` are the helpers:
 ```
-Ki AT s=<pi>
-=N(<pi>)/(<pi-p1>)(<pi-p2>)..      (the products with their values)
-=<Ki>
-TERM: <Ki>*e^(<pi>t)                real pole
-PAIR: 2|K|e^(at)COS(bt+∠K)          complex pole with imag>0, then the values:
-=<2|Ki|>e^(<re pi>t)COS(<im pi>t+<∠Ki °>)
-(CONJUGATE OF PAIR ABOVE)           complex pole with imag<0
+K<i> AT s=<ZS(pi)>
+=<ZS(N(pi))>/(<ZS(pi-pj)>*<ZS(pi-pk)>...)      one factor per other pole, in list order
+=<ZC(Ki)>
+then, for a real pole:
+TERM: <ZS(Ki)>*e^(<ZS(pi)>t)
+for a complex pole with imag > 0:
+PAIR: 2|K|*e^(at)*COS(bt+∠K)
+=<ZF(2|Ki|)>*e^(<ZS(real pi)>t)*COS(<ZF(imag pi)>t<+ if ∠Ki ≥ 0><ZR(∠Ki in degrees)>°)
+for a complex pole with imag < 0:
+(CONJUGATE OF PAIR ABOVE)
 ```
+Example, `N={10}`, poles `{0,-2,-5}`: `K1 AT s=0`, `=10/(2*5)`, `=1`, `TERM: 1*e^(0t)`, `K2 AT s=(-2)`, `=10/((-2)*3)`, `=-1.667`, `TERM: (-1.667)*e^((-2)t)`, …
+Example, `N={1}`, poles `{-1+2i,-1-2i}`: `K1 AT s=(-1+j2)`, `=1/((j4))`, `=-j250m`, `PAIR: 2|K|*e^(at)*COS(bt+∠K)`, `=500m*e^((-1)t)*COS(2t-90°)`, `K2 AT s=(-1-j2)`, `=1/((-j4))`, `=j250m`, `(CONJUGATE OF PAIR ABOVE)`.
 
 ---
 
@@ -554,7 +559,7 @@ D  VO(IOS), WITH R3 = IOS*R2    | I*F          | V
 W  WORST, WITH R3 = VO(VOS)+VO(IOS) | E+D      | V
 X  WORST, NO R3 = VO(VOS)+VO(IB)    | E+A      | V
 ```
-answers: R3, WORST WITH R3, WORST NO R3
+answers: `R3` · `WORST, WITH R3` · `WORST, NO R3`
 
 ### finite · FINITE GAIN · FINITE OPEN-LOOP GAIN
 picture:
@@ -958,13 +963,14 @@ TIMES A POWER OF 10
 ```
 inputs: `X "VALUE="`
 Guard `X≤0` → "VALUE MUST BE > 0"
-Compute (Raw): decade `D=10^(int(log(X)))`, mantissa `M=X/D`, the list `L₆={1,1.2,1.5,1.8,2.2,2.7,3.3,3.9,4.7,5.6,6.8,8.2,10}`; nearest in ratio (smallest `abs(log(L₆/M))`), and the neighbours just below and above `X`.
+Compute (Raw): decade `D=10^(int(log(X)))`, mantissa `M=X/D`, the list `L₆={1,1.2,1.5,1.8,2.2,2.7,3.3,3.9,4.7,5.6,6.8,8.2,10}`. NEAREST is the entry with the smallest `abs(log(L₆/M))`, times D. BELOW is the largest E12 value ≤ X and ABOVE the smallest ≥ X (both equal X when X is an E12 value).
 steps (shown):
 ```
 D  DECADE = 10^INT(LOG(X))   | 10^(int(log(X)))  | 
 M  MANTISSA = X/DECADE       | X/D               | 
-E  NEAREST                   | (Raw)             | 
-B  BELOW                     | (Raw)             | 
-A  ABOVE                     | (Raw)             | 
+E  NEAREST = E12*DECADE      | <mantissa>*D      | 
+B  BELOW                     | <mantissa>*D      | 
+A  ABOVE                     | <mantissa>*D      | 
 ```
+The Raw block only picks the three list entries (into spare variables); NEAREST, BELOW and ABOVE are ordinary Calc steps on them, so the tests can read them by name.
 answers: NEAREST, BELOW, ABOVE
