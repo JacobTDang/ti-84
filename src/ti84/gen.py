@@ -147,7 +147,8 @@ def gen_topic(topic: Topic) -> str:
                 for _ in step.cases:
                     lines.append("End")
             elif isinstance(step, Guard):
-                g_lbl = f"{tool_letter[i]}{guard_id}"
+                # Digit first: letter+digit can be a token (L1 is the list L₁).
+                g_lbl = f"{guard_id}{tool_letter[i]}"
                 tool_guards.append((g_lbl, step.message))
                 lines.append(f"If {step.cond}")
                 lines.append(f"Goto {g_lbl}")
