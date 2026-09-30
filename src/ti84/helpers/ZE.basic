@@ -1,0 +1,16 @@
+If θ=0
+Then
+Return
+End
+Output(10,1,Str0)
+0
+Repeat max(Ans={45,105})
+getKey
+End
+If Ans=45
+Then
+0→θ
+Return
+End
+ClrHome
+1→θ

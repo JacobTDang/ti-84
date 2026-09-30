@@ -1,0 +1,30 @@
+{real(Ans),imag(Ans)}→⌊ZC
+If ⌊ZC(2)=0
+Then
+⌊ZC(1)
+prgmZF
+Return
+End
+If ⌊ZC(1)=0
+Then
+abs(⌊ZC(2))
+prgmZF
+If ⌊ZC(2)<0
+Then
+"-j"+Str9→Str9
+Else
+"j"+Str9→Str9
+End
+Return
+End
+⌊ZC(1)
+prgmZF
+Str9→Str8
+abs(⌊ZC(2))
+prgmZF
+If ⌊ZC(2)<0
+Then
+Str8+"-j"+Str9→Str9
+Else
+Str8+"+j"+Str9→Str9
+End
