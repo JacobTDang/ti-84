@@ -35,7 +35,7 @@ This is the contract between the generator (`gen.py`), the hand-written helpers 
 | `θ` | 5B | var | Real variable. Reserved for the pager. |
 | `Str1`…`Str9`, `Str0` | AA00…AA08, AA09 | var | String variables. |
 | `L₁`–`L₆` | 5D00–5D05 | var | List variables. |
-| `⌊` | EB | var | Named-list prefix: `⌊ZF`, a letter then up to 4 letters or digits. |
+| `⌊` | EB | var | Named-list prefix: `⌊ZF`, a letter then up to 4 letters or digits. Decodes as `ʟ`. |
 | `"` | 2A | str | Starts or ends a string. The string also ends at `→` or at the end of the line. |
 | `{` `}` `,` `(` `)` | 08 09 2B 10 11 | punct | Lists, calls and grouping. |
 | `+` `-` `*` `/` `^` | 70 71 82 83 F0 | op | Binary operators. `+` also joins strings. |
@@ -124,4 +124,4 @@ Outside strings, the lint rejects:
 - `-` (71) at the start of an expression, as defined above;
 - any token not in the table above.
 
-Inside strings, the lint rejects `"` and any character whose encode→decode round trip changes the text. The display glyphs known to work in strings are `² ° Ω μ Δ ∠ α β θ σ τ ≤ ≥ → ⁻ ᴇ 𝑖 |` and ASCII letters, digits, spaces and `+-*/^=<>()[]{},.:;!?%&#@_$|`. The apostrophe, `~` and `\` do not round-trip. `π`, `ω` and `√` don't encode inside strings, so the display text writes `PI`, `w` and `SQRT(`.
+Inside strings, the lint rejects `"` and any character whose encode→decode round trip changes the text. The display glyphs known to work in strings are `² ° Ω μ Δ ∠ α β θ σ τ ≤ ≥ ⁻ ᴇ 𝑖 |` and ASCII letters, digits, spaces and `+-*/^=<>()[]{},.:;!?%&#@_$|`. The apostrophe, `~` and `\` do not round-trip, and `→` always ends a string. `π`, `ω` and `√` don't encode inside strings, so the display text writes `PI`, `w` and `SQRT(`.
