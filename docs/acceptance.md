@@ -5,13 +5,13 @@ Run this on the real TI-84 Plus CE after loading `dist/*.8xp`. Each line has wha
 ## Setup
 
 1. [2nd][+] (MEM) → 1:About: the OS version is **5.2 or newer**.
-2. [prgm]: you see EE230, EEBASIC, EECPLX, EES, EEOPAMP, EEFILT, EEUTIL, ZC, ZE, ZF, ZP, ZR, ZS.
+2. [prgm]: you see EE, EEBASIC, EECPLX, EES, EEOPAMP, EEFILT, EEUTIL, ZC, ZE, ZF, ZP, ZR, ZS.
 
 ## Menus
 
-3. Run EE230: menu titled `EE 230` with 7 items ending in `QUIT`.
-4. 5:FILTERS: first page shows 6 tools and `MORE`; `MORE` shows the rest and `BACK`; `BACK` returns to the EE230 menu.
-5. From the EE230 menu, `QUIT` returns to the home screen.
+3. Run EE: menu titled `EE` with 7 items ending in `QUIT`.
+4. 5:FILTERS: first page shows 6 tools and `MORE`; `MORE` shows the rest and `BACK`; `BACK` returns to the EE menu.
+5. From the EE menu, `QUIT` returns to the home screen.
 
 ## One tool per topic
 

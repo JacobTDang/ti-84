@@ -1,1 +1,1 @@
-"""TI-84 Plus CE programs for EE 2300."""
+"""TI-84 Plus CE programs for electronic circuits."""

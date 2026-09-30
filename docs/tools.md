@@ -1,6 +1,6 @@
 # Tool catalog
 
-Every tool the calculator offers, as recipe content. Formulas follow the EE 2300 lecture notes (course notation, e.g. Sallen-Key `R1=mR`, `C1=nC`, `C1` to the output). The recipes in `src/ti84/recipes/` implement this file; the tests in `tests/tools/` hold the numbers.
+Every tool the calculator offers, as recipe content. Formulas follow the course lecture notes (their notation, e.g. Sallen-Key `R1=mR`, `C1=nC`, `C1` to the output). The recipes in `src/ti84/recipes/` implement this file; the tests in `tests/tools/` hold the numbers.
 
 ## Notation
 

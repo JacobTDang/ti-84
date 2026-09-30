@@ -197,6 +197,8 @@ def validate(topic: Topic) -> None:
                 
                 check_display(step.name, "step name")
                 check_display(step.formula, "formula")
+                if not step.formula:
+                    add_problem(tool.id, f"step {step.name!r} has an empty formula")
                 if step.unit:
                     check_display(step.unit, "unit")
                 
@@ -218,6 +220,8 @@ def validate(topic: Topic) -> None:
                 check_lint(step.at, "at")
                 check_display(step.name, "step name")
                 check_display(step.formula, "formula")
+                if not step.formula:
+                    add_problem(tool.id, f"step {step.name!r} has an empty formula")
                 if step.unit:
                     check_display(step.unit, "unit")
             
