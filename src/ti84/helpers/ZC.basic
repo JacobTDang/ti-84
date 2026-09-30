@@ -1,17 +1,15 @@
-{Ans,0,0}→⌊ZC
-real(⌊ZC(1))→⌊ZC(2)
-imag(⌊ZC(1))→⌊ZC(3)
-If ⌊ZC(3)=0
+{real(Ans),imag(Ans)}→⌊ZC
+If ⌊ZC(2)=0
 Then
-⌊ZC(2)
+⌊ZC(1)
 prgmZF
 Return
 End
-If ⌊ZC(2)=0
+If ⌊ZC(1)=0
 Then
-abs(⌊ZC(3))
+abs(⌊ZC(2))
 prgmZF
-If ⌊ZC(3)<0
+If ⌊ZC(2)<0
 Then
 "-j"+Str9→Str9
 Else
@@ -19,12 +17,12 @@ Else
 End
 Return
 End
-⌊ZC(2)
+⌊ZC(1)
 prgmZF
 Str9→Str8
-abs(⌊ZC(3))
+abs(⌊ZC(2))
 prgmZF
-If ⌊ZC(3)<0
+If ⌊ZC(2)<0
 Then
 Str8+"-j"+Str9→Str9
 Else

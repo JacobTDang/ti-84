@@ -1,5 +1,5 @@
-{Ans}→⌊ZS
-If imag(⌊ZS(1))=0
+{real(Ans),imag(Ans)}→⌊ZS
+If ⌊ZS(2)=0
 Then
 ⌊ZS(1)
 prgmZF
@@ -9,6 +9,6 @@ Then
 End
 Return
 End
-⌊ZS(1)
+⌊ZS(1)+⌊ZS(2)*𝑖
 prgmZC
 "("+Str9+")"→Str9

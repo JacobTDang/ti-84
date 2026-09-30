@@ -213,3 +213,8 @@ def test_ze_does_nothing_after_quit():
     calc, run = ended(0, "DONE  ENTER:MENU")
     assert run.log == []
     assert calc.vars["θ"] == 0.0
+
+
+@pytest.mark.parametrize("helper, value, text", [("ZF", 3 + 4j, "3+j4"), ("ZR", -2j, "-j2")])
+def test_real_formatters_hand_complex_values_to_zc(helper, value, text):
+    assert call(helper, value) == text

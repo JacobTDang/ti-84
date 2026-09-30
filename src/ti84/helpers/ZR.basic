@@ -1,4 +1,9 @@
-{Ans,0}→⌊ZF
+If imag(Ans)≠0
+Then
+prgmZC
+Return
+End
+{real(Ans),0}→⌊ZF
 round(⌊ZF(1),2)→⌊ZF(2)
 If ⌊ZF(2)=0
 Then
