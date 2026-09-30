@@ -90,14 +90,16 @@ def validate(topic: Topic) -> None:
         problems.append(f"{topic.program}/{tool_id}: {msg}")
 
     if not re.fullmatch(r"[A-Z][A-Z0-9]{0,7}", topic.program):
-        problems.append(f"{topic.program}/None: program name must be 1-8 uppercase letters or digits, starting with a letter")
+        problems.append(f"{topic.program}: program name must be 1-8 uppercase letters or digits, starting with a letter")
 
     if len(topic.title) > 14:
-        problems.append(f"{topic.program}/None: topic title must be <= 14 characters")
+        problems.append(f"{topic.program}: topic title must be <= 14 characters")
+    for p in display_problems(topic.title):
+        problems.append(f"{topic.program}: topic title: {p}")
 
     tool_ids = set()
     if len(topic.tools) > 24:
-        problems.append(f"{topic.program}/None: at most 24 tools are allowed")
+        problems.append(f"{topic.program}: at most 24 tools are allowed")
 
     for tool in topic.tools:
         if tool.id in tool_ids:
@@ -169,7 +171,10 @@ def validate(topic: Topic) -> None:
             except LintError as e:
                 add_problem(tool.id, f"{desc}: {e}")
 
+        check_display(tool.label, "label")
         check_display(tool.title, "title")
+        if sum(isinstance(step, Guard) for step in tool.steps) > 9:
+            add_problem(tool.id, "at most 9 guards per tool")
         for i, line in enumerate(tool.picture):
             check_display(line, f"picture line {i}")
 

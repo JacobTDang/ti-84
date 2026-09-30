@@ -1,5 +1,5 @@
 from typing import Sequence
-from ti84.model import Topic, Calc, Poly, Note, Verdict, Guard, Raw, validate
+from ti84.model import Topic, Calc, Poly, Note, Verdict, Guard, Raw, ModelError, validate
 from ti84.tokens import encode, decode
 
 PIECES_MAP = {
@@ -49,6 +49,8 @@ def pieces(expr: str) -> list[tuple[str, str]]:
     return result
 
 def gen_main(topics: Sequence[Topic]) -> str:
+    if len(topics) > 6:
+        raise ModelError(f"EE230: at most 6 topics fit the main menu, got {len(topics)}")
     lines = ["Lbl M"]
     menu_items = ['"EE 230"']
     for i, topic in enumerate(topics, 1):
@@ -111,9 +113,8 @@ def gen_topic(topic: Topic) -> str:
         "Return"
     ])
     
-    guard_id = 1
-    
     for i, tool in enumerate(topic.tools):
+        guard_id = 1
         lines.append(f"Lbl {tool_letter[i]}")
         lines.append("ClrHome")
         
@@ -166,21 +167,18 @@ def gen_topic(topic: Topic) -> str:
             return {"si": "prgmZF", "fix2": "prgmZR", "cplx": "prgmZC"}[fmt]
             
         for ans_name in tool.answers:
-            if ans_name in step_dict:
-                step = step_dict[ans_name]
-                if isinstance(step, (Calc, Poly)):
-                    lines.append(step.var)
-                    lines.append(fmt_helper(step.fmt))
-                    if step.unit:
-                        lines.append(f'"{step.name}="+Str9+" {step.unit}"→Str0')
-                    else:
-                        lines.append(f'"{step.name}="+Str9→Str0')
-                    lines.append("prgmZP")
-                elif isinstance(step, Verdict):
-                    lines.append(f'"{step.name}: "+{step.var}→Str0')
-                    lines.append("prgmZP")
-            else:
-                pass
+            step = step_dict[ans_name]
+            if isinstance(step, (Calc, Poly)):
+                lines.append(step.var)
+                lines.append(fmt_helper(step.fmt))
+                if step.unit:
+                    lines.append(f'"{step.name}="+Str9+" {step.unit}"→Str0')
+                else:
+                    lines.append(f'"{step.name}="+Str9→Str0')
+                lines.append("prgmZP")
+            elif isinstance(step, Verdict):
+                lines.append(f'"{step.name}: "+{step.var}→Str0')
+                lines.append("prgmZP")
                 
         for step in tool.steps:
             if isinstance(step, Raw):

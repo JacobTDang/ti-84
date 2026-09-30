@@ -276,3 +276,31 @@ def test_gen_main():
 )
 def test_pieces_split_an_expression_into_display_text_and_variables(expr, expected):
     assert pieces(expr) == expected
+
+
+def test_guard_labels_count_per_tool():
+    from ti84.model import Guard
+
+    def guarded(k):
+        return Tool(
+            id=f"g{k}",
+            label=f"G{k}",
+            title=f"G{k}",
+            picture=("P",),
+            inputs=(Input("A", "A="),),
+            steps=(Guard("A=0", ("ZERO",)), Calc("B", "B", "A", "A")),
+            answers=("B",),
+        )
+
+    text = gen_topic(Topic("EETEST", "TEST", (guarded(1), guarded(2))))
+    assert "If A=0\nGoto A1\n" in text
+    assert "If A=0\nGoto B1\n" in text
+    assert "Lbl B1\n" in text
+
+
+def test_gen_main_rejects_more_than_six_topics():
+    from ti84.model import ModelError
+
+    topics = tuple(Topic(f"EE{k}", f"T{k}", _tools(1)) for k in range(7))
+    with pytest.raises(ModelError, match="at most 6 topics"):
+        gen_main(topics)

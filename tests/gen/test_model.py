@@ -112,3 +112,22 @@ def test_a_tool_needs_inputs_and_answers(topic):
 def test_tool_type(topic):
     assert isinstance(topic.tools[0], Tool)
     assert isinstance(topic, Topic)
+
+
+def test_menu_label_is_display_checked(topic):
+    check(with_tool(topic, label="|N TOOL"), "label")
+
+
+def test_topic_title_is_display_checked(topic):
+    check(replace(topic, title="|N"), "topic title")
+
+
+def test_topic_level_problems_name_only_the_program(topic):
+    text = check(replace(topic, program="bad"), "program name")
+    assert text.startswith("bad: program name")
+
+
+def test_at_most_nine_guards_per_tool(topic):
+    tool = topic.tools[0]
+    guards = tuple(Guard("V=0", ("ZERO",)) for _ in range(10))
+    check(with_tool(topic, steps=(*tool.steps, *guards)), "at most 9 guards")
