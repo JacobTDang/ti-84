@@ -20,9 +20,10 @@ solve = Tool(
         Raw(writes=("N",), compute=("(√(4*dim(L₁)+1)-1)/2→N",)),
         Guard("N≠int(N) or N<2 or N>4", ("NEED N*(N+1) NUMBERS", "FOR N EQUATIONS, N=2-4")),
         Raw(
-            writes=("F", "K", "P", "M", "I", "V", "J", "T", "X", "S", "L₂", "L₃"),
+            writes=("F", "K", "P", "M", "I", "V", "J", "T", "X", "S", "E", "L₂", "L₃"),
             compute=(
                 "L₁→L₃",
+                "1ᴇ⁻9*max(abs(L₁))→E",
                 "0→F",
                 "For(K,1,N)",
                 "K→P",
@@ -35,7 +36,7 @@ solve = Tool(
                 "I→P",
                 "End",
                 "End",
-                "If M=0",
+                "If M≤E",
                 "Then",
                 "1→F",
                 "Else",
