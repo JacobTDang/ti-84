@@ -19,6 +19,7 @@ answers:            names shown on the answer screen, in order
 - `Poly <var> <NAME> = <list>(<at>) loop <K>` evaluates a coefficient list (highest power first) at a point by Horner's rule; the work shows only the result line.
 - `Note "<text>"` adds a line of text to the work.
 - Display text writes `w` for ω, `PI` for π, `SQRT(` for √, `j` for the imaginary unit; code writes `pi`, `√(`, `𝑖`.
+- Display text never contains `->`: tivars reads it as the store arrow `→`, which ends a string. Pictures use `>` instead.
 
 ---
 
@@ -462,7 +463,7 @@ Output limits follow the course rule `VEE+2 ≤ vo ≤ VCC-2` (use the datasheet
 ### inv · INVERTING · INVERTING AMPLIFIER
 picture:
 ```
-VIN -> R1 -> (-) INPUT
+VIN > R1 > (-) INPUT
 R2 FROM (-) TO VOUT
 (+) INPUT TO GROUND
 GAIN = -R2/R1
@@ -482,7 +483,7 @@ answers: GAIN, VOUT, RAILS, |VIN|MAX
 ### noninv · NON-INVERTING · NON-INVERTING AMPLIFIER
 picture:
 ```
-VIN -> (+) INPUT
+VIN > (+) INPUT
 R2 FROM (-) TO VOUT
 R1 FROM (-) TO GROUND
 GAIN = 1+R2/R1
@@ -494,7 +495,7 @@ answers: GAIN, VOUT, RAILS, |VIN|MAX
 ### sum3 · SUMMER · INVERTING SUMMER
 picture:
 ```
-V1->R1, V2->R2, V3->R3
+V1>R1, V2>R2, V3>R3
 ALL MEET AT (-) INPUT
 RF FROM (-) TO VOUT
 UNUSED INPUT: V=0, R=1
@@ -509,9 +510,9 @@ answers: VOUT
 ### diff · DIFFERENCE AMP · DIFFERENCE AMPLIFIER
 picture:
 ```
-VA -> RA -> (-) INPUT
+VA > RA > (-) INPUT
 RB FROM (-) TO VOUT
-VB -> RC -> (+) INPUT
+VB > RC > (+) INPUT
 RD FROM (+) TO GROUND
 ```
 inputs: `A "VA="` · `B "VB="` · `R "RA Ω="` · `F "RB Ω="` · `S "RC Ω="` · `T "RD Ω="`
@@ -621,7 +622,7 @@ answers: SLEW, FMAX, VMMAX
 ### rclp · RC LOW-PASS · RC LOW-PASS FILTER
 picture:
 ```
-VIN -> R -> VOUT
+VIN > R > VOUT
 C FROM VOUT TO GROUND
 H = 1/(1+jw/wc)
 ```
@@ -641,7 +642,7 @@ answers: fc, |H|, DB, ∠H
 ### rchp · RC HIGH-PASS · RC HIGH-PASS FILTER
 picture:
 ```
-VIN -> C -> VOUT
+VIN > C > VOUT
 R FROM VOUT TO GROUND
 H = (jw/wc)/(1+jw/wc)
 ```
@@ -651,7 +652,7 @@ answers: fc, |H|, DB, ∠H
 ### rcload · LOADED RC LP · LOADED RC LOW-PASS
 picture:
 ```
-VIN -> R -> VOUT
+VIN > R > VOUT
 C AND RL FROM VOUT TO GND
 LOAD LOWERS GAIN,
 RAISES CUTOFF
@@ -669,7 +670,7 @@ answers: K, wc LOADED, fc LOADED
 ### actlp · ACTIVE INV LP · ACTIVE INVERTING LOW-PASS
 picture:
 ```
-VIN -> R1 -> (-) INPUT
+VIN > R1 > (-) INPUT
 R2 AND C IN PARALLEL
  FROM (-) TO VOUT
 (+) TO GROUND
@@ -691,7 +692,7 @@ answers: G0, fc, |H|, DB, ∠H
 ### acthp · ACTIVE INV HP · ACTIVE INVERTING HIGH-PASS
 picture:
 ```
-VIN -> C -> R1 -> (-) IN
+VIN > C > R1 > (-) IN
 R2 FROM (-) TO VOUT
 (+) TO GROUND
 ```
@@ -725,7 +726,7 @@ answers: w0, Q, wc LP, wc HP, BW
 ### sklpa · SK LP ANALYZE · SALLEN-KEY LOW-PASS
 picture:
 ```
-VIN->R1->VX->R2->(+)
+VIN>R1>VX>R2>(+)
 C1 FROM VX TO VOUT
 C2 FROM (+) TO GROUND
 FOLLOWER: VOUT = V+
@@ -765,7 +766,7 @@ answers: R1, R2, C1, m
 ### skhpa · SK HP ANALYZE · SALLEN-KEY HIGH-PASS
 picture:
 ```
-VIN->C1->VX->C2->(+)
+VIN>C1>VX>C2>(+)
 R1 FROM VX TO VOUT
 R2 FROM (+) TO GROUND
 FOLLOWER: VOUT = V+
@@ -800,7 +801,7 @@ answers: R1, R2, m
 ### ladda · RC LADDER · RC LADDER ANALYZE
 picture:
 ```
-VIN->R1->V1->R2->VOUT
+VIN>R1>V1>R2>VOUT
 C1 FROM V1 TO GROUND
 C2 FROM VOUT TO GROUND
 Q IS ALWAYS BELOW 0.5
@@ -838,7 +839,7 @@ answers: R2, C1, C2
 ### mfb · MFB BANDPASS · MULTI-FEEDBACK BANDPASS
 picture:
 ```
-VIN -> R1 -> NODE X
+VIN > R1 > NODE X
 R3 FROM X TO GROUND
 C1 FROM X TO (-) INPUT
 C2 FROM X TO VOUT
@@ -858,7 +859,7 @@ answers: w0, f0, Q, BW, G0
 ### sv · STATE-VARIABLE · STATE-VARIABLE FILTER
 picture:
 ```
-SUMMER -> INTEGRATOR ->
+SUMMER > INTEGRATOR >
  INTEGRATOR (R, C EACH)
 OUTPUTS: HP, BP, LP
 G3 = RF/R1
