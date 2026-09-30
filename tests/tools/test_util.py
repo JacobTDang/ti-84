@@ -101,3 +101,13 @@ def test_solve_complex_coefficients():
 def test_solve_guards():
     assert run_tool("solve", [[1, 2, 3, 4]]).stopped == ["NEED N*(N+1) NUMBERS", "FOR N EQUATIONS, N=2-4"]
     assert run_tool("solve", [[1, 1, 2, 2, 2, 4]]).stopped == ["NO UNIQUE SOLUTION"]
+
+
+def test_solve_nearly_singular_is_reported_not_solved():
+    assert run_tool("solve", [[1, 1, 2, 1, 1.0000000001, 2]]).stopped == ["NO UNIQUE SOLUTION"]
+
+
+def test_solve_small_but_valid_conductances():
+    # Node equations with 1/R terms around 1e-4 still solve.
+    r = run_tool("solve", [[3e-4, -1e-4, 1e-3, -1e-4, 2e-4, 0]])
+    assert r.calc.lists["L₂"] == [approx(4), approx(2)]

@@ -67,6 +67,38 @@ noninv = Tool(
     answers=("GAIN", "VOUT", "RAILS", "|VIN|MAX"),
 )
 
+
+limits = Tool(
+    id="limits",
+    label="OUTPUT LIMITS",
+    title="OUTPUT SWING LIMITS",
+    picture=(
+        "VOUT = GAIN*VIN UNTIL IT",
+        " HITS VO MAX OR VO MIN",
+        "DATASHEET VALUES, OR",
+        " VCC-2 AND VEE+2",
+    ),
+    inputs=(
+        Input("G", "GAIN V/V="),
+        Input("V", "VIN V="),
+        Input("H", "VO MAX V="),
+        Input("L", "VO MIN V="),
+    ),
+    steps=(
+        Calc("O", "IDEAL VOUT", "GAIN*VIN", "G*V", "V"),
+        Calc("A", "ACTUAL VOUT", "CLIP TO LIMITS", "min(H,max(L,O))", "V"),
+        Calc("X", "VIN AT VO MAX", "VO MAX/GAIN", "H/G", "V"),
+        Calc("Y", "VIN AT VO MIN", "VO MIN/GAIN", "L/G", "V"),
+        Verdict(
+            "Str1",
+            "CLIPS",
+            (Case("O>H or O<L", "YES: OUTPUT CLIPS"),),
+            "NO: INSIDE LIMITS",
+        ),
+    ),
+    answers=("IDEAL VOUT", "ACTUAL VOUT", "CLIPS", "VIN AT VO MAX", "VIN AT VO MIN"),
+)
+
 sum3 = Tool(
     id="sum3",
     label="SUMMER",
@@ -171,6 +203,64 @@ offset = Tool(
     answers=("R3", "WORST, WITH R3", "WORST, NO R3"),
 )
 
+
+vosm = Tool(
+    id="vosm",
+    label="VOS FROM VO",
+    title="OFFSET FROM MEASURED VO",
+    picture=(
+        "INPUT GROUNDED (VS=0)",
+        "VO IS THE MEASURED OUTPUT",
+        "R1 IN, R2 FEEDBACK",
+        "VO = VOS*(1+R2/R1)",
+    ),
+    inputs=(
+        Input("O", "VO V="),
+        Input("R", "R1 Ω="),
+        Input("F", "R2 Ω="),
+    ),
+    steps=(
+        Calc("G", "NOISE GAIN", "1+R2/R1", "1+F/R", "V/V"),
+        Calc("V", "VOS", "VO/NOISE GAIN", "O/G", "V"),
+    ),
+    answers=("VOS",),
+)
+
+
+ibcap = Tool(
+    id="ibcap",
+    label="BIAS INTO CAP",
+    title="BIAS CURRENT INTO A CAP",
+    picture=(
+        "(+) HAS ONLY C TO GROUND",
+        "BIAS CURRENT CHARGES C",
+        "IP<0: CURRENT OUT OF PIN",
+        "GAIN 1+R2/R1 (NON-INV)",
+    ),
+    inputs=(
+        Input("P", "IP A="),
+        Input("N", "IN A="),
+        Input("C", "C F="),
+        Input("R", "R1 Ω="),
+        Input("F", "R2 Ω="),
+        Input("T", "t s="),
+        Input("H", "VO MAX V="),
+        Input("L", "VO MIN V="),
+    ),
+    steps=(
+        Guard("P=0", ("IP=0: NO RAMP",)),
+        Calc("S", "dVP/dt", "-IP/C", "⁻P/C", "V/s"),
+        Calc("G", "GAIN", "1+R2/R1", "1+F/R", "V/V"),
+        Calc("V", "VP(t)", "dVP/dt*t", "S*T", "V"),
+        Calc("O", "VO(t)", "GAIN*VP(t)", "G*V", "V"),
+        Calc("M", "LIMIT", "VO MAX IF RISING ELSE VO MIN", "(S≥0)*H+(S<0)*L", "V", "si", False),
+        Calc("X", "tSAT", "LIMIT/(GAIN*dVP/dt)", "M/(G*S)", "s"),
+        Calc("B", "IB", "(IP+IN)/2", "(P+N)/2", "A"),
+        Calc("D", "IOS", "IP-IN", "P-N", "A"),
+    ),
+    answers=("VO(t)", "tSAT", "IB", "IOS"),
+)
+
 finite = Tool(
     id="finite",
     label="FINITE GAIN",
@@ -251,5 +341,5 @@ slew = Tool(
 TOPIC = Topic(
     program="EEOPAMP",
     title="OP AMPS",
-    tools=(inv, noninv, sum3, diff, iout, offset, finite, gbw, slew),
+    tools=(inv, noninv, limits, sum3, diff, iout, offset, vosm, ibcap, finite, gbw, slew),
 )
