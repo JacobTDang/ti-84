@@ -119,7 +119,7 @@ def validate(topic: Topic) -> None:
 
         if not tool.inputs:
             add_problem(tool.id, "needs at least one input")
-        if not tool.answers:
+        if not tool.answers and not any(isinstance(s, Raw) and s.answers for s in tool.steps):
             add_problem(tool.id, "needs at least one answer")
 
         for inp in tool.inputs:

@@ -142,3 +142,9 @@ def test_calc_and_poly_need_a_formula(topic):
     steps = tuple(replace(s, formula="") if isinstance(s, Poly) else s for s in mix.steps)
     bad = replace(topic, tools=(topic.tools[0], replace(mix, steps=steps)))
     check(bad, "empty formula")
+
+
+def test_a_tool_can_print_its_answers_from_raw_code(topic):
+    raw = Raw(writes=("X",), compute=("1→X",), answers=('"X=1"→Str0', "prgmZP"))
+    tool = topic.tools[0]
+    validate(with_tool(topic, steps=(*tool.steps, raw), answers=()))
