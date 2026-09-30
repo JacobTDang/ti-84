@@ -106,3 +106,49 @@ def test_slew_ok():
 def test_slew_limited():
     r = run_tool("slew", [0.5, 5, 20000])
     assert r.value("SLEW") == "SLEW LIMITED: DISTORTS"
+
+
+def test_limits_datasheet_values_clip():
+    # LM324 at ±10 V: +8.74 V / -9.27 V
+    r = run_tool("limits", [-10, 1, 8.74, -9.27])
+    assert r.value("IDEAL VOUT") == approx(-10)
+    assert r.value("ACTUAL VOUT") == approx(-9.27)
+    assert r.value("VIN AT VO MAX") == approx(-0.874)
+    assert r.value("VIN AT VO MIN") == approx(0.927)
+    assert r.value("CLIPS") == "YES: OUTPUT CLIPS"
+
+
+def test_limits_inside():
+    r = run_tool("limits", [-10, 0.5, 8.74, -9.27])
+    assert r.value("ACTUAL VOUT") == approx(-5)
+    assert r.value("CLIPS") == "NO: INSIDE LIMITS"
+
+
+def test_vosm_course_homework_2_problem_1():
+    r = run_tool("vosm", [-0.08, 2000, 20000])
+    assert r.value("NOISE GAIN") == approx(11)
+    assert r.value("VOS") == approx(-0.08 / 11)
+    assert "VOS=-7.273m V" in r.answers
+
+
+def test_ibcap_course_homework_2_problem_2():
+    r = run_tool("ibcap", [-20e-9, -18e-9, 1e-6, 1000, 10000, 10, 6.5, -6.5])
+    assert r.value("dVP/dt") == approx(0.02)
+    assert r.value("GAIN") == approx(11)
+    assert r.value("VO(t)") == approx(2.2)
+    assert r.value("LIMIT") == approx(6.5)
+    assert r.value("tSAT") == approx(6.5 / 0.22)
+    assert r.value("IB") == approx(-19e-9)
+    assert r.value("IOS") == approx(-2e-9)
+    assert r.answers == ["BIAS CURRENT INTO A CAP", "VO(t)=2.2 V", "tSAT=29.55 s", "IB=-19n A", "IOS=-2n A"]
+
+
+def test_ibcap_current_into_the_pin_ramps_down():
+    r = run_tool("ibcap", [20e-9, 18e-9, 1e-6, 1000, 10000, 10, 6.5, -6.5])
+    assert r.value("VO(t)") == approx(-2.2)
+    assert r.value("LIMIT") == approx(-6.5)
+    assert r.value("tSAT") == approx(6.5 / 0.22)
+
+
+def test_ibcap_guard():
+    assert run_tool("ibcap", [0, 0, 1e-6, 1000, 10000, 10, 6.5, -6.5]).stopped == ["IP=0: NO RAMP"]

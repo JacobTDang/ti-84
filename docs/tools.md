@@ -270,6 +270,60 @@ answers: VOUT, |VOUT|, ∠VOUT
 
 ## S-DOMAIN · `EES` (Module 1)
 
+### hdiv · H(s) Z DIVIDER · H(s) OF A Z DIVIDER
+picture:
+```
+VIN > Z1 > VOUT > Z2 > GND
+EACH Z IS R, L, C:
+ TYPE 1 = IN SERIES
+ TYPE 2 = IN PARALLEL
+0 = PART NOT THERE
+SAVES L1=TOP, L2=BOTTOM
+```
+inputs: `T "Z1 TYPE="` · `R "Z1 R Ω="` · `L "Z1 L H="` · `C "Z1 C F="` · `U "Z2 TYPE="` · `S "Z2 R Ω="` · `M "Z2 L H="` · `D "Z2 C F="`
+Guards: `(T≠1 and T≠2) or (U≠1 and U≠2)` → "TYPE MUST BE 1 OR 2"; `R=0 and L=0 and C=0` → "Z1 HAS NO PARTS"; `S=0 and M=0 and D=0` → "Z2 HAS NO PARTS".
+Compute (Raw), as coefficient lists (highest power first):
+- a series arm is `Z = (L*s² + R*s + 1/C)/s`, numerator `{L,R,1/C}` over `{1,0}` (1/C is 0 when C is 0);
+- a parallel arm is `Z = s/(C*s² + s/R + 1/L)`, numerator `{1,0}` over `{C,1/R,1/L}` (1/R, 1/L are 0 when the part is 0);
+- strip leading zeros, then cancel common trailing zeros (factors of s) between numerator and denominator;
+- `H = Z2/(Z1+Z2)`: top `n2*d1`, bottom `n1*d2 + n2*d1` (polynomial multiply and add);
+- strip again, then divide top and bottom by the bottom's leading coefficient. Store the top in `L₁` and the bottom in `L₂`.
+Polynomial text (used below): terms from the highest power down, zero coefficients skipped, each `<ZS(c)>*s^k` written `<ZS(c)>*s²`, `<ZS(c)>*s`, or `<ZS(c)>` for k = 2, 1, 0 (`<ZS(c)>*s^<k>` above 2), joined with `+`.
+Answers (Raw), after the title:
+```
+N(s)=<text of L₁>
+D(s)=<text of L₂>
+DC GAIN=<ZF(N(0)/D(0))>          or  DC GAIN: POLE AT s=0   when D(0)=0
+then by the order of D:
+ 1: POLE=<ZC(-L₂(2))>
+ 2: w0=<ZF(√(d0))> rad/s, Q=<ZF(√(d0)/d1)>, p1=<ZC>, p2=<ZC>   (four lines; p = (-d1±√(d1²-4d0))/2)
+ 3 or more: ORDER <n>: USE PLYSMLT2
+```
+Work (Raw):
+```
+Z1=(<text of n1>)/(<text of d1>)
+Z2=(<text of n2>)/(<text of d2>)
+H=Z2/(Z1+Z2)
+=(<text of top>)/(<text of bottom>)            before dividing
+DIVIDE TOP AND BOTTOM BY <ZF(lead)>
+then the answer lines, then SAVED: L1=TOP, L2=BOTTOM
+```
+
+### hopamp · H(s) OP AMP · H(s) OF AN OP AMP STAGE
+picture:
+```
+ZF FROM (-) TO VOUT
+AMP 1 INV: VIN>ZIN>(-)
+AMP 2 NON-INV: VIN>(+),
+ ZIN FROM (-) TO GND
+EACH Z: 1=SERIES 2=PAR
+0 = PART NOT THERE
+```
+inputs: `A "AMP 1/2="` · `T "ZIN TYPE="` · `R "ZIN R Ω="` · `L "ZIN L H="` · `C "ZIN C F="` · `U "ZF TYPE="` · `S "ZF R Ω="` · `M "ZF L H="` · `D "ZF C F="`
+Guards: `A≠1 and A≠2` → "AMP MUST BE 1 OR 2"; the type and no-parts guards of hdiv (ZIN, ZF).
+Compute (Raw): arms as in hdiv. Inverting `H = -ZF/ZIN`: top `-nf*din`, bottom `df*nin`. Non-inverting `H = 1+ZF/ZIN`: top `nin*df + nf*din`, bottom `nin*df`. Then strip, normalize and store as in hdiv.
+Answers and work: as hdiv, with `ZIN=`/`ZF=` for the arm lines and `H=-ZF/ZIN` or `H=1+ZF/ZIN`.
+
 ### taurc · TAU OF RC · RC TIME CONSTANT
 picture:
 ```
@@ -425,17 +479,63 @@ Q  OUT PHASE = PHASE+∠H    | P+G              | ° | fix2
 ```
 answers: OUT AMP, OUT PHASE
 
-### pfrac · PARTIAL FRAC · PARTIAL FRACTIONS (priority 2)
+### bode · BODE LINES · STRAIGHT-LINE BODE PLOT
+picture:
+```
+H=K0(1+s/z)../(1+s/p)..
+ AND 1/s^N (N POLES AT 0)
+CORNERS z, p IN rad/s
+NO ZEROS OR POLES: {0}
+```
+inputs: `K "K0="` · `N "POLES AT 0="` · `L₁ "ZEROS {..}=" list` · `L₂ "POLES {..}=" list`
+Guards: `K=0` → "K0 CANNOT BE 0"; `min(L₁)<0 or min(L₂)<0` → "CORNERS MUST BE > 0".
+Compute (Raw): the low-frequency asymptote is `L + s0*log(w)` with `L = 20*log|K0|` and `s0 = -20N`. Take the corners (entries of 0 are ignored) in increasing order, merging equal ones; each zero adds +20 dB/dec and each pole -20 dB/dec at its corner. The level at the first corner is `L + s0*log(c1)`, then `A(c) = A(prev) + slope*log(c/prev)`.
+Answers (Raw), after the title:
+```
+LOW F SLOPE=<ZR(s0)> dB/DEC
+20*LOG|K0|=<ZR(L)> dB
+w=<ZF(c)>: <ZR(A(c))> dB, THEN <ZR(slope after c)>        one per corner
+```
+Work (Raw):
+```
+LOW F: 20*LOG|K0|+SLOPE*LOG(w)
+20*LOG|K0|=<ZR(L)> dB, SLOPE <ZR(s0)>
+then per corner:
+w=<ZF(c)>: SLOPE CHANGE <ZR(change)>
+=<ZR(A(prev))>+(<ZR(slope before)>)*LOG(<ZF(c)>)            first corner
+=<ZR(A(prev))>+(<ZR(slope before)>)*LOG(<ZF(c)>/<ZF(prev)>)  later corners
+=<ZR(A(c))> dB, SLOPE NOW <ZR(slope after)>
+```
+
+### ends · START AND END · STEP START AND END VALUES
+picture:
+```
+STEP OF SIZE V INTO H(s)
+H AS LISTS, HIGHEST POWER
+FIRST (L1 TOP, L2 BOTTOM)
+ONLY FOR A STABLE H(s)
+```
+inputs: `L₁ "N {..}=" list` · `L₂ "D {..}=" list` · `V "STEP V="`
+Guards: `dim(L₁)>dim(L₂)` → "IMPROPER H(s)"; `L₂(dim(L₂))=0` → "POLE AT s=0:" / "NO FINAL VALUE".
+steps:
+```
+E  y(INF) = V*N(0)/D(0)                  | V*L₁(dim(L₁))/L₂(dim(L₂))         |  | si | sub=False
+S  y(0+) = V*LEAD N/LEAD D IF SAME ORDER | V*(dim(L₁)=dim(L₂))*L₁(1)/L₂(1)  |  | si | sub=False
+Note "FROM s*Y(s) AT s=0 AND s=INF"
+```
+answers: y(0+), y(INF)
+
+### pfrac · PARTIAL FRAC · PARTIAL FRACTIONS
 picture:
 ```
 F(s)=N(s)/((s-p1)(s-p2)..)
 DENOMINATOR STARTS AT 1s^n
-POLES MUST BE DIFFERENT
+ONE DOUBLE POLE ALLOWED
 STEP INPUT: ADD POLE 0
 POLES LIKE {0,-2,-1+3i}
 ```
 inputs: `L₁ "N {..}=" list` · `L₂ "POLES {..}=" list`
-Guards: `dim(L₁)>dim(L₂)` → "IMPROPER: DEG N ≥ DEG D" / "DIVIDE FIRST"; any two poles equal → "REPEATED POLE:" / "NOT HANDLED HERE".
+Guards: `dim(L₁)>dim(L₂)` → "IMPROPER: DEG N ≥ DEG D" / "DIVIDE FIRST"; repeated poles beyond one double pole → see below.
 Compute (Raw): for each pole i, `Ki = N(pi) / ∏(j≠i) (pi-pj)` into `L₃` (N evaluated by Horner's rule).
 Answers (Raw): one line per pole, `K<i>=<ZC(Ki)>`.
 Work (Raw), per pole i; `ZS`, `ZC`, `ZF` and `ZR` are the helpers:
@@ -453,6 +553,21 @@ for a complex pole with imag < 0:
 ```
 Example, `N={10}`, poles `{0,-2,-5}`: `K1 AT s=0`, `=10/(2*5)`, `=1`, `TERM: 1*e^(0t)`, `K2 AT s=(-2)`, `=10/((-2)*3)`, `=-1.667`, `TERM: (-1.667)*e^((-2)t)`, …
 Example, `N={1}`, poles `{-1+2i,-1-2i}`: `K1 AT s=(-1+j2)`, `=1/((j4))`, `=-j250m`, `PAIR: 2|K|*e^(at)*COS(bt+∠K)`, `=500m*e^((-1)t)*COS(2t-90°)`, `K2 AT s=(-1-j2)`, `=1/((-j4))`, `=j250m`, `(CONJUGATE OF PAIR ABOVE)`.
+
+
+One double pole is allowed (a pole entered twice, like `{-1,-1,-2}`). Write the double pole as `p` and the product of the other factors as `REST(s) = ∏(s-q)` over every other pole (1 if there are none). Then the coefficient of `1/(s-p)²` is `K2 = N(p)/REST(p)`, and the coefficient of `1/(s-p)` is `K1 = (dN/ds - K2*dREST/ds)/REST`, all at s = p. Every other pole uses the formula above, with both copies of `p` in its product. `L₃` holds `K1` at the first copy of `p` and `K2` at the second.
+Answers: the first copy's line ends ` OVER (s-p)` and the second's ` OVER (s-p)²`, e.g. `K1=-1 OVER (s-p)`, `K2=2 OVER (s-p)²`.
+Work for the double pole, printed at its first copy (the second copy prints nothing):
+```
+DOUBLE POLE AT s=<ZS(p)>
+K<i2> OVER (s-p)²=N(p)/REST(p)
+=<ZS(N(p))>/<ZS(REST(p))>
+=<ZC(K2)>
+K<i1> OVER (s-p)=(dN/ds-K<i2>*dREST/ds)/REST
+=<ZC(K1)>
+TERM: <ZS(K2)>*t*e^(<ZS(p)>t)+<ZS(K1)>*e^(<ZS(p)>t)
+```
+Guard change: a pole entered three or more times, or two different repeated poles → "REPEATED POLES:" / "ONLY ONE DOUBLE POLE".
 
 ---
 
@@ -491,6 +606,25 @@ GAIN = 1+R2/R1
 inputs: `V "VIN V="` · `R "R1 Ω="` · `F "R2 Ω="` · `P "VCC V="` · `N "VEE V="`
 steps: as inv with `G  GAIN = 1+R2/R1 | 1+F/R | V/V`, then `Note "VCM = VIN: CHECK INPUT RANGE"`.
 answers: GAIN, VOUT, RAILS, |VIN|MAX
+
+### limits · OUTPUT LIMITS · OUTPUT SWING LIMITS
+picture:
+```
+VOUT = GAIN*VIN UNTIL IT
+ HITS VO MAX OR VO MIN
+DATASHEET VALUES, OR
+ VCC-2 AND VEE+2
+```
+inputs: `G "GAIN V/V="` · `V "VIN V="` · `H "VO MAX V="` · `L "VO MIN V="`
+steps:
+```
+O  IDEAL VOUT = GAIN*VIN          | G*V               | V
+A  ACTUAL VOUT = CLIP TO LIMITS   | min(H,max(L,O))   | V
+X  VIN AT VO MAX = VO MAX/GAIN    | H/G               | V
+Y  VIN AT VO MIN = VO MIN/GAIN    | L/G               | V
+Verdict Str1 CLIPS: O>H or O<L → "YES: OUTPUT CLIPS" / else "NO: INSIDE LIMITS"
+```
+answers: `IDEAL VOUT` · `ACTUAL VOUT` · `CLIPS` · `VIN AT VO MAX` · `VIN AT VO MIN`
 
 ### sum3 · SUMMER · INVERTING SUMMER
 picture:
@@ -561,6 +695,45 @@ W  WORST, WITH R3 = VO(VOS)+VO(IOS) | E+D      | V
 X  WORST, NO R3 = VO(VOS)+VO(IB)    | E+A      | V
 ```
 answers: `R3` · `WORST, WITH R3` · `WORST, NO R3`
+
+### vosm · VOS FROM VO · OFFSET FROM MEASURED VO
+picture:
+```
+INPUT GROUNDED (VS=0)
+VO IS THE MEASURED OUTPUT
+R1 IN, R2 FEEDBACK
+VO = VOS*(1+R2/R1)
+```
+inputs: `O "VO V="` · `R "R1 Ω="` · `F "R2 Ω="`
+steps:
+```
+G  NOISE GAIN = 1+R2/R1   | 1+F/R  | V/V
+V  VOS = VO/NOISE GAIN    | O/G    | V
+```
+answers: `VOS`
+
+### ibcap · BIAS INTO CAP · BIAS CURRENT INTO A CAP
+picture:
+```
+(+) HAS ONLY C TO GROUND
+BIAS CURRENT CHARGES C
+IP<0: CURRENT OUT OF PIN
+GAIN 1+R2/R1 (NON-INV)
+```
+inputs: `P "IP A="` · `N "IN A="` · `C "C F="` · `R "R1 Ω="` · `F "R2 Ω="` · `T "t s="` · `H "VO MAX V="` · `L "VO MIN V="`
+Guard `P=0` → "IP=0: NO RAMP".
+steps:
+```
+S  dVP/dt = -IP/C                  | ⁻P/C            | V/s
+G  GAIN = 1+R2/R1                  | 1+F/R           | V/V
+V  VP(t) = dVP/dt*t                | S*T             | V
+O  VO(t) = GAIN*VP(t)              | G*V             | V
+M  LIMIT = VO MAX IF RISING ELSE VO MIN | (S≥0)*H+(S<0)*L | V | si | sub=False
+X  tSAT = LIMIT/(GAIN*dVP/dt)      | M/(G*S)         | s
+B  IB = (IP+IN)/2                  | (P+N)/2         | A
+D  IOS = IP-IN                     | P-N             | A
+```
+answers: `VO(t)` · `tSAT` · `IB` · `IOS`
 
 ### finite · FINITE GAIN · FINITE OPEN-LOOP GAIN
 picture:
@@ -883,6 +1056,31 @@ answers: w0, Q, HP GAIN, BP GAIN, LP GAIN
 
 ## UTILITIES · `EEUTIL`
 
+### solve · SOLVE EQNS · SOLVE LINEAR EQUATIONS
+picture:
+```
+UP TO 4 EQNS, 4 UNKNOWNS
+TYPE ALL ROWS IN ONE LIST
+ a11,a12,b1,a21,a22,b2..
+2x1+3x2=5 AND x1-x2=0:
+ {2,3,5,1,⁻1,0}
+COMPLEX VALUES ALLOWED
+```
+inputs: `L₁ "ROWS {..}=" list`
+steps and guards, in order:
+```
+N  N = (SQRT(4*COUNT+1)-1)/2   | (√(4*dim(L₁)+1)-1)/2 |  | si | sub=False
+Guard N≠int(N) or N<2 or N>4 → "NEED N*(N+1) NUMBERS" / "FOR N EQUATIONS, N=2-4"
+Raw: Gaussian elimination with partial pivoting (largest abs pivot) into L₂, setting a flag when a pivot is 0
+Guard <flag> → "NO UNIQUE SOLUTION"
+```
+Answers (Raw): `x<i>=<ZC(x_i)>` for each unknown; the solution is also left in `L₂`.
+Work (Raw):
+```
+EQ<i>: <ZS(a_i1)>*x1+<ZS(a_i2)>*x2+...=<ZS(b_i)>     every coefficient, zeros included
+SOLVED BY ELIMINATION
+```
+
 ### todb · RATIO TO DB · RATIO TO DECIBELS
 picture:
 ```
@@ -955,7 +1153,7 @@ P  PHASE = 360*F*DT   | 360*F*T  | ° | fix2
 ```
 answers: PHASE
 
-### e12 · NEAREST E12 · NEAREST E12 VALUE (priority 2)
+### e12 · NEAREST E12 · NEAREST E12 VALUE
 picture:
 ```
 E12: 1 1.2 1.5 1.8 2.2 2.7
