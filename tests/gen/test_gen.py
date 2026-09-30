@@ -249,12 +249,12 @@ def test_gen_main():
     )
     assert gen_main(topics) == (
         "Lbl M\n"
-        'Menu("EE 230","TEST",1,"OTHER",2,"QUIT",Q)\n'
+        'Menu("EE","TEST",1,"OTHER",2,"QUIT",Q)\n'
         "Lbl 1\nprgmEETEST\nGoto M\n"
         "Lbl 2\nprgmEEOTHER\nGoto M\n"
         "Lbl Q\nClrHome\n"
     )
-    lint(gen_main(topics), "EE230")
+    lint(gen_main(topics), "EE")
 
 
 @pytest.mark.parametrize(

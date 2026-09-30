@@ -50,9 +50,9 @@ def pieces(expr: str) -> list[tuple[str, str]]:
 
 def gen_main(topics: Sequence[Topic]) -> str:
     if len(topics) > 6:
-        raise ModelError(f"EE230: at most 6 topics fit the main menu, got {len(topics)}")
+        raise ModelError(f"main menu: at most 6 topics fit, got {len(topics)}")
     lines = ["Lbl M"]
-    menu_items = ['"EE 230"']
+    menu_items = ['"EE"']
     for i, topic in enumerate(topics, 1):
         menu_items.extend([f'"{topic.title}"', str(i)])
     menu_items.extend(['"QUIT"', "Q"])

@@ -1,10 +1,10 @@
-# EE 230 calculator programs: design
+# TI-84 circuit programs: design
 
 Date: 2026-09-29. Status: approved for implementation.
 
 ## Goal
 
-A set of TI-84 Plus CE programs for EE 2300 (Iowa State, Fall 2026) Exam 1, which covers Modules 1 to 3. The student picks a circuit or formula from a menu, types the numbers, and gets the answer first. Then [ENTER] pages through the work: for every step, the formula, the formula with the numbers put in, and the result. The professor has approved calculator programs for the exam; the point is to understand the method without getting stuck on arithmetic.
+A set of TI-84 Plus CE programs for an electronic circuits exam covering Modules 1 to 3: the s-domain, op amps and filters. The student picks a circuit or formula from a menu, types the numbers, and gets the answer first. Then [ENTER] pages through the work: for every step, the formula, the formula with the numbers put in, and the result. The professor has approved calculator programs for the exam; the point is to understand the method without getting stuck on arithmetic.
 
 ## Constraints
 
@@ -16,9 +16,9 @@ A set of TI-84 Plus CE programs for EE 2300 (Iowa State, Fall 2026) Exam 1, whic
 ## What the student sees
 
 ```
-EE230 main menu        Topic menu (EEFILT)       Tool
+EE main menu           Topic menu (EEFILT)       Tool
 ┌──────────────────┐   ┌──────────────────┐
-│EE 230            │   │FILTERS           │
+│EE                │   │FILTERS           │
 │1:BASICS          │   │1:RC LOW-PASS     │   1. picture screen  (ENTER)
 │2:COMPLEX+Z       │ → │2:RC HIGH-PASS    │ → 2. inputs          (type, ENTER each)
 │3:S-DOMAIN        │   │...               │   3. answer screen   (ENTER=work, CLEAR=quit)
@@ -89,7 +89,7 @@ The TI-BASIC subset is the contract between `gen` and `sim`. It is fixed in [doc
 
 | Program | What it is |
 |---|---|
-| `EE230` | The main menu, which calls the topic programs. |
+| `EE` | The main menu, which calls the topic programs. |
 | `EEBASIC` `EECPLX` `EES` `EEOPAMP` `EEFILT` `EEUTIL` | One per topic, holding every tool of that topic as a labelled section. Each can also be run on its own. |
 | `ZF` `ZR` `ZC` `ZS` `ZP` `ZE` | The shared helpers. They are named Z so they sort last in the PRGM menu. |
 
@@ -160,6 +160,6 @@ We write each test before its code. pytest runs everything with `uv run pytest`.
 
 1. Run `uv run ti84-build`, which writes `dist/*.8xp`.
 2. Install TI Connect CE (Mac), connect the calculator with USB, and drag every file from `dist/` onto the calculator.
-3. On the calculator, press [prgm], choose EE230, and press [ENTER].
+3. On the calculator, press [prgm], choose EE, and press [ENTER].
 
 A GitHub release attaches the `.8xp` files so the calculator can be loaded without building.
