@@ -6,6 +6,7 @@ from ti84.tokens import (
     Token,
     TokenError,
     decode,
+    display_problems,
     encode,
     lint,
     read_8xp,
@@ -121,3 +122,23 @@ def test_write_and_read_8xp_round_trip(tmp_path):
 def test_write_8xp_rejects_bad_program_names(tmp_path, name):
     with pytest.raises(TokenError, match="program name"):
         write_8xp(name, "ClrHome", tmp_path / "X.8xp")
+
+
+@pytest.mark.parametrize("text", ["VOUT=VS*R2/(R1+R2)", "|H|", "∠Z=ANGLE(Z)*180/PI", "C=2.2μ F", "fc=1.592kHz", "N {..}="])
+def test_display_text_that_round_trips(text):
+    assert display_problems(text) == []
+
+
+@pytest.mark.parametrize(
+    "text, problem",
+    [
+        ("|N|", "'𝗡' is not a plain character"),
+        ('SAY "HI"', "contains '\"'"),
+        ("A→B", "contains '→'"),
+        ("2π", "cannot be encoded"),
+        ("IT'S", "is not a plain character"),
+    ],
+)
+def test_display_text_that_does_not_round_trip(text, problem):
+    problems = display_problems(text)
+    assert problems and problem in problems[0]

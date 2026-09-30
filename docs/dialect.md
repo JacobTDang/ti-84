@@ -15,7 +15,7 @@ This is the contract between the generator (`gen.py`), the hand-written helpers 
 | `ClrHome` | E1 | stmt | Blank the 10×26 home screen and move the Input cursor to row 1. |
 | `Output(` | E0 | stmt | `Output(row,col,value)`. See Screen. |
 | `Input ` | DC | stmt | `Input "prompt",var`. `var` is a real var, `L₁`–`L₆` or `θ`. |
-| `Pause ` | D8 | stmt | With no argument, wait for [ENTER]. |
+| `Pause ` | D8 | stmt | With no argument, wait for [ENTER]. Always spell it with the trailing space: a bare `Pause` tokenizes as five lowercase letters. The same holds for `Input `, `If `, `Lbl `, `Goto ` and `Repeat `. |
 | `Menu(` | E6 | stmt | `Menu("title","item",label,...)`, 1–7 items. It jumps to the chosen item's label. |
 | `Lbl ` | D6 | stmt | Label of 1–2 characters from `A`–`Z`, `0`–`9`, `θ`. |
 | `Goto ` | D7 | stmt | Jump to a label in the same program (the first `Lbl` from the top). |
@@ -72,7 +72,7 @@ The precedence, from tightest to loosest, is:
 
 The sim adds these rules:
 
-- **Explicit multiplication only.** Two operands next to each other (`2A`, `A(B)`, `)(`) raise `SimError`. The generator always writes `*`.
+- **Explicit multiplication only.** Two operands next to each other (`2A`, `A(B)`, `)(`, `A𝑖`) raise `SimError`. The generator always writes `*`. The one exception is a number literal followed directly by `𝑖` (`4𝑖`, `2.5𝑖`), which is a complex literal, because that's how a complex value is typed.
 - **A `-` at the start of an expression** (after the start of a line, `(`, `,`, `→` or an operator) raises `SimError`. On the calculator that means `Ans-…`; the generator writes `⁻`.
 - **Every `(` and `"` must be closed.** The calculator lets them be left open at the end of a line; the sim does not. The generator always closes them.
 - **Lists.** Arithmetic and comparisons work element by element: a list with a number, or two lists of equal length (unequal lengths raise `SimError("ERR:DIM MISMATCH")`).

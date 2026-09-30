@@ -144,6 +144,23 @@ def lint(text: str, program: str) -> None:
         raise LintError("\n".join(problems))
 
 
+def display_problems(text: str) -> list[str]:
+    """Problems that stop `text` from showing on the calculator exactly as written, inside a string."""
+    for bad in ('"', "→"):
+        if bad in text:
+            return [f"{text!r} contains {bad!r}"]
+    try:
+        data = encode(f'"{text}"')
+    except TokenError:
+        return [f"{text!r} cannot be encoded"]
+    problems = [
+        f"{text!r}: {token.text!r} is not a plain character"
+        for token in decode(data)[1:-1]
+        if len(token.text) != 1 or token.text not in STRING_CHARS
+    ]
+    return problems
+
+
 def _check_name(name: str) -> None:
     if not _PROGRAM_NAME.fullmatch(name):
         raise TokenError(f"program name {name!r} must be 1-8 uppercase letters or digits, starting with a letter")
