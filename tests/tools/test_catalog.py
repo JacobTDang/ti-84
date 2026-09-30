@@ -21,7 +21,7 @@ MODULES = {
 def catalog():
     text = DOCS.read_text(encoding="utf-8")
     topics = {}
-    for match in re.finditer(r"^## (.+?) · `(\w+)`.*?$(.*?)(?=^## |\Z)", text, re.M | re.S):
+    for match in re.finditer(r"^## ([^\n]+?) · `(\w+)`[^\n]*$(.*?)(?=^## |\Z)", text, re.M | re.S):
         title, program, body = match.groups()
         tools = [
             (tool_id, label.strip(), re.sub(r" \(priority 2\)$", "", tool_title.strip()))
