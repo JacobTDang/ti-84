@@ -23,8 +23,11 @@ Run this on the real TI-84 Plus CE after loading `dist/*.8xp`. Each line has wha
 | 9 | OP AMPS → FINITE GAIN | R1=1000, R2=100000, AOL=1000 | `INV REAL=-90.83 V/V` |
 | 10 | FILTERS → RC LOW-PASS | R=1000, C=1ᴇ⁻6, F=159.1549 | `fc=159.2 Hz`, `|H|=707.1m V/V`, `DB=-3.01 dB`, `∠H=-45 °` |
 | 11 | UTILITIES → DB TO RATIO | DB=-3 | `V RATIO=707.9m V/V` |
+| 11a | S-DOMAIN → H(s) OP AMP | AMP=1; ZIN: TYPE=1, R=1000, L=0.05, C=0; ZF: TYPE=2, R=10000, L=0, C=1ᴇ⁻8 | `N(s)=(-2G)`, `D(s)=1*s²+30k*s+200M`, `DC GAIN=-10` |
+| 11b | S-DOMAIN → PARTIAL FRAC | N={1,3}, POLES={⁻1,⁻1,⁻2} | `K1=-1 OVER (s-p)`, `K2=2 OVER (s-p)²`, `K3=1` |
+| 11c | UTILITIES → SOLVE EQNS | ROWS={1,.5,1,⁻5,2,1,0,0,0,2,1,0} | `x1=-1.25`, `x2=2.5`, `x3=-5` |
 
-For each of 6–11 also check:
+For each of 6–11c also check:
 
 12. The picture screen shows before the inputs; [ENTER] moves on.
 13. [ENTER] on the answer screen shows the work: formula line, line with numbers, result line.
