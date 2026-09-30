@@ -119,7 +119,10 @@ def build_program(name: str, data: bytes) -> Program:
         if not stmt.tokens:
             continue
         if stmt.tokens[0].bits == B_LBL:
-            label = parse_label(list(stmt.tokens[1:]))
+            try:
+                label = parse_label(list(stmt.tokens[1:]))
+            except SimError as err:
+                raise SimError(f"{err} at {name}:{stmt.line}") from err
             if label not in labels:
                 labels[label] = i
     return Program(name=name, statements=statements, labels=labels)

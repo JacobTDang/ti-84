@@ -80,7 +80,7 @@ For(K,1,dim(L₁))
 N*S+L₁(K)→N
 End
 If W=0
-Goto B1
+Goto 1B
 abs(N)→M
 20*log(M)→D
 If M>1
@@ -172,7 +172,7 @@ prgmZP
 "DONE  ENTER:MENU"→Str0
 prgmZE
 Goto M
-Lbl B1
+Lbl 1B
 ClrHome
 Output(1,1,"MIXED STEPS")
 Output(3,1,"F MUST NOT BE 0")
@@ -293,9 +293,9 @@ def test_guard_labels_count_per_tool():
         )
 
     text = gen_topic(Topic("EETEST", "TEST", (guarded(1), guarded(2))))
-    assert "If A=0\nGoto A1\n" in text
-    assert "If A=0\nGoto B1\n" in text
-    assert "Lbl B1\n" in text
+    assert "If A=0\nGoto 1A\n" in text
+    assert "If A=0\nGoto 1B\n" in text
+    assert "Lbl 1B\n" in text
 
 
 def test_gen_main_rejects_more_than_six_topics():
@@ -304,3 +304,22 @@ def test_gen_main_rejects_more_than_six_topics():
     topics = tuple(Topic(f"EE{k}", f"T{k}", _tools(1)) for k in range(7))
     with pytest.raises(ModelError, match="at most 6 topics"):
         gen_main(topics)
+
+
+def test_guard_label_of_the_twelfth_tool_is_not_a_list_name():
+    from ti84.model import Guard
+
+    tools = list(_tools(12))
+    tools[11] = Tool(
+        id="t12",
+        label="TOOL 12",
+        title="TOOL 12",
+        picture=("P",),
+        inputs=(Input("A", "A="),),
+        steps=(Guard("A=0", ("ZERO",)), Calc("B", "B", "A", "A")),
+        answers=("B",),
+    )
+    text = gen_topic(Topic("EETEST", "TEST", tuple(tools)))
+    assert "Goto 1L\n" in text
+    assert "Lbl 1L\n" in text
+    lint(text, "EETEST")
