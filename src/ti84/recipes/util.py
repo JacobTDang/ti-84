@@ -124,8 +124,8 @@ e12 = Tool(
             ),
         ),
         Calc("E", "NEAREST", "E12*DECADE", "U*D", ""),
-        Calc("B", "BELOW", "", "V*D", ""),
-        Calc("A", "ABOVE", "", "W*D", ""),
+        Calc("B", "BELOW", "E12 BELOW*DECADE", "V*D", ""),
+        Calc("A", "ABOVE", "E12 ABOVE*DECADE", "W*D", ""),
     ),
     answers=("NEAREST", "BELOW", "ABOVE"),
 )
