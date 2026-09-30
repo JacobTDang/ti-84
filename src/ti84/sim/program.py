@@ -107,9 +107,6 @@ def split_statements(data: bytes) -> list[Statement]:
         if not current:
             stmt_line = line
         current.append(token)
-    if in_string:
-        # leave unclosed for expr to report when run
-        pass
     if current:
         statements.append(Statement(tuple(current), stmt_line))
     return statements

@@ -294,9 +294,15 @@ class _Parser:
     def parse_power(self) -> Any:
         left = self.parse_postfix()
         while self.tok.match(B_POW):
-            right = self.parse_postfix()
+            right = self._parse_exponent()
             left = zip_lists(left, right, self._pow)
         return left
+
+    def _parse_exponent(self) -> Any:
+        """The operand after ^, which may be negated: 2^⁻2 is 0.25."""
+        if self.tok.match(B_NEG):
+            return self._neg(self._parse_exponent())
+        return self.parse_postfix()
 
     def _pow(self, x: Any, y: Any) -> Any:
         x, y = require_number(x), require_number(y)
@@ -508,21 +514,12 @@ class _Parser:
             raise SimError("unclosed parenthesis")
         if step == 0:
             raise SimError("ERR:INCREMENT")
-        saved = self.ctx.get_var(var)
-        had = var in getattr(self.ctx, "_var_keys", {var})  # fallback below
-        # restore properly via set/get; Calculator tracks sparse dict
-        previous = None
-        try:
-            previous = self.ctx.get_var(var)
-            # Detect sparse: we always get 0.0 for missing; machine tracks ownership
-            previous_owned = self.ctx.has_var(var) if hasattr(self.ctx, "has_var") else True
-        except Exception:
-            previous_owned = False
-            previous = 0.0
+        had = self.ctx.has_var(var)
+        previous = self.ctx.get_var(var)
 
         result: list[Any] = []
         x = start
-        # inclusive end, matching TI For/seq behavior
+
         def past(cur: float) -> bool:
             if step > 0:
                 return cur > end
@@ -534,10 +531,10 @@ class _Parser:
                 result.append(evaluate(expr_tokens, self.ctx))
                 x += step
         finally:
-            if hasattr(self.ctx, "has_var") and not previous_owned:
-                self.ctx.clear_var(var)
+            if had:
+                self.ctx.set_var(var, previous)
             else:
-                self.ctx.set_var(var, previous if previous is not None else saved)
+                self.ctx.clear_var(var)
         return result
 
     def _collect_until_comma(self) -> list[Token]:

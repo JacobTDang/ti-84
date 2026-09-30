@@ -213,12 +213,8 @@ class Calculator:
         try:
             self._exec_program(name)
             self._check_unused_events()
-        except SimError:
-            raise
         finally:
             run.screen = self._screen_tuple()
-            # also snapshot final screen into screens? dialect: "So do getKey waits and the end of the run."
-            # Looking at tests - Pause snapshots; end of run sets run.screen but may not need screens append
             self._run = None
         return run
 
